@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Checkout;
+use App\Product;
 use PHPUnit\Framework\TestCase;
 
 class CheckoutTest extends TestCase
@@ -11,7 +12,7 @@ class CheckoutTest extends TestCase
     {
         $checkout = new Checkout();
 
-        $checkout->scan('A');
+        $checkout->scan(new Product('A', 50));
 
         $this->assertEquals(50, $checkout->total(), 'Checkout total does not equal expected value of 50');
     }
@@ -23,15 +24,6 @@ class CheckoutTest extends TestCase
         $this->assertEquals(0, $checkout->total(), 'Checkout total does not equal expected value of 0');
     }
 
-    public function test_adding_an_invalid_sku_does_not_crash_the_checkout()
-    {
-        $checkout = new Checkout();
-
-        $checkout->scan('WANDAVISION!');
-
-        $this->assertEquals(0, $checkout->total(), 'Checkout total does not equal expected value of 0');
-    }
-
     /**
      * @dataProvider basketProvider
      */
@@ -39,8 +31,8 @@ class CheckoutTest extends TestCase
     {
         $checkout = new Checkout();
 
-        array_map(function (string $sku) use ($checkout) {
-            $checkout->scan($sku);
+        array_map(function (Product $product) use ($checkout) {
+            $checkout->scan($product);
         }, $itemsToAdd);
 
         $this->assertEquals(
@@ -57,11 +49,28 @@ class CheckoutTest extends TestCase
      */
     public function basketProvider()
     {
+        $product_a = new Product('A', 50);
+        $product_b = new Product('B', 30);
+        $product_c = new Product('C', 20);
+        $product_d = new Product('D', 15);
+
         return [
-            [100, ['A', 'A']],
-            [130, ['A', 'A', 'A']],
-            [130, ['A', 'A', 'B']],
-            [85, ['A', 'C', 'D']],
+            [
+                100,
+                [$product_a, $product_a]
+            ],
+            [
+                130,
+                [$product_a, $product_a, $product_a]
+            ],
+            [
+                130,
+                [$product_a, $product_b, $product_a]
+            ],
+            [
+                85,
+                [$product_a, $product_c, $product_d]
+            ],
         ];
     }
 
@@ -69,9 +78,11 @@ class CheckoutTest extends TestCase
     {
         $checkout = new Checkout();
 
-        $checkout->scan('A');
-        $checkout->scan('A');
-        $checkout->scan('A');
+        $product_a = new Product('A', 50);
+
+        $checkout->scan($product_a);
+        $checkout->scan($product_a);
+        $checkout->scan($product_a);
 
         $this->assertEquals(130, $checkout->total(), 'Checkout total does not equal expected value of 130');
     }
@@ -80,13 +91,15 @@ class CheckoutTest extends TestCase
     {
         $checkout = new Checkout();
 
-        $checkout->scan('A');
-        $checkout->scan('A');
-        $checkout->scan('A');
+        $product_a = new Product('A', 50);
 
-        $checkout->scan('A');
-        $checkout->scan('A');
-        $checkout->scan('A');
+        $checkout->scan($product_a);
+        $checkout->scan($product_a);
+        $checkout->scan($product_a);
+
+        $checkout->scan($product_a);
+        $checkout->scan($product_a);
+        $checkout->scan($product_a);
 
         $this->assertEquals(260, $checkout->total(), 'Checkout total does not equal expected value of 260');
     }
@@ -95,15 +108,17 @@ class CheckoutTest extends TestCase
     {
         $checkout = new Checkout();
 
-        $checkout->scan('A');
-        $checkout->scan('A');
-        $checkout->scan('A');
+        $product_a = new Product('A', 50);
 
-        $checkout->scan('A');
-        $checkout->scan('A');
-        $checkout->scan('A');
+        $checkout->scan($product_a);
+        $checkout->scan($product_a);
+        $checkout->scan($product_a);
 
-        $checkout->scan('A');
+        $checkout->scan($product_a);
+        $checkout->scan($product_a);
+        $checkout->scan($product_a);
+
+        $checkout->scan($product_a);
 
         $this->assertEquals(310, $checkout->total(), 'Checkout total does not equal expected value of 310');
     }
@@ -112,8 +127,10 @@ class CheckoutTest extends TestCase
     {
         $checkout = new Checkout();
 
-        $checkout->scan('B');
-        $checkout->scan('B');
+        $product_b = new Product('B', 30);
+
+        $checkout->scan($product_b);
+        $checkout->scan($product_b);
 
         $this->assertEquals(45, $checkout->total(), 'Checkout total does not equal expected value of 45');
     }

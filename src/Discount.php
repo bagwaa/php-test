@@ -4,16 +4,35 @@ namespace App;
 
 class Discount
 {
-    protected $sku;
+    /**
+     * @var int
+     */
+    protected $threshold;
 
-    protected $quantityDiscountAppliedAt;
+    /**
+     * @var in
+     */
+    protected $amount;
 
-    protected $discount;
-
-    public function __construct(string $sku, int $quantityDiscountAppliedAt, int $discount)
+    public function __construct(int $threshold, int $amount)
     {
-        $this->sku = $sku;
-        $this->quantityDiscountAppliedAt = $quantityDiscountAppliedAt;
-        $this->discount = $discount;
+        $this->threshold = $threshold;
+        $this->amount = $amount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getThreshold() : int
+    {
+        return $this->threshold;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAmount() : int
+    {
+        return $this->amount;
     }
 }

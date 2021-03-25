@@ -7,9 +7,9 @@ interface CheckoutInterface
     /**
      * Adds an item to the checkout
      *
-     * @param $sku string
+     * @param Product $product
      */
-    public function scan(string $sku);
+    public function scan(Product $product);
 
     /**
      * Calculates the total price of all items in this checkout

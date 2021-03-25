@@ -5,6 +5,11 @@ namespace App;
 class Checkout implements CheckoutInterface
 {
     /**
+     * @var array
+     */
+    protected $cart = [];
+
+    /**
      * @var int[]
      */
     protected $pricing = [
@@ -14,15 +19,23 @@ class Checkout implements CheckoutInterface
         'D' => 15
     ];
 
+    /**
+     * @var int[][]
+     */
     protected $discounts = [
         'A' => [3, 20],
-        'B' => [2, 15]
+        'B' => [2, 15],
     ];
 
     /**
-     * @var array
+     * @var int[]
      */
-    protected $cart = [];
+    protected $stats = [
+        'A' => 0,
+        'B' => 0,
+        'C' => 0,
+        'D' => 0,
+    ];
 
     /**
      * Adds an item to the checkout
@@ -37,7 +50,12 @@ class Checkout implements CheckoutInterface
             return;
         }
 
-        $this->cart[] = new Product($sku, $this->pricing[$sku]);
+        $this->stats[$sku] = $this->stats[$sku] + 1;
+
+        $this->cart[] = [
+            'sku' => $sku,
+            'price' => $this->pricing[$sku]
+        ];
     }
 
     /**
@@ -52,9 +70,19 @@ class Checkout implements CheckoutInterface
         //
         // I am also using array_reduce to essentially reduce the cart down to a single value which
         // represents the total value
-        return array_reduce($this->cart, function ($total, Product $product) {
-            $total += $product->getPrice();
+        $standardPrices = array_reduce($this->cart, function ($total, array $product) {
+            $total += $product['price'];
             return $total;
         }) ?? 0;
+
+        $totalDiscount = 0;
+
+        foreach ($this->discounts as $key => $discount) {
+            if ($this->stats[$key] >= $discount[0]) {
+                $totalDiscount += $discount[1];
+            }
+        }
+
+        return $standardPrices - $totalDiscount;
     }
 }

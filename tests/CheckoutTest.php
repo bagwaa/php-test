@@ -50,7 +50,7 @@ class CheckoutTest extends TestCase
         );
     }
 
-    public function test_the_discounted_price_is_used_when_ordering_three_or_more_of_A()
+    public function test_the_discounted_price_is_used_when_ordering_three_of_A()
     {
         $checkout = new Checkout();
 
@@ -61,7 +61,37 @@ class CheckoutTest extends TestCase
         $this->assertEquals(130, $checkout->total(), 'Checkout total does not equal expected value of 130');
     }
 
-    public function test_the_discounted_price_is_used_when_ordering_two_or_more_of_B()
+    public function test_the_discounted_price_is_used_multiple_times_when_ordering_six_of_A()
+    {
+        $checkout = new Checkout();
+
+        $checkout->scan('A');
+        $checkout->scan('A');
+        $checkout->scan('A');
+
+        $checkout->scan('A');
+        $checkout->scan('A');
+        $checkout->scan('A');
+
+        $this->assertEquals(260, $checkout->total(), 'Checkout total does not equal expected value of 260');
+    }
+
+    public function test_the_discounted_price_is_used_multiple_times_when_ordering_seven_of_A()
+    {
+        $checkout = new Checkout();
+
+        $checkout->scan('A');
+        $checkout->scan('A');
+        $checkout->scan('A');
+        $checkout->scan('A');
+        $checkout->scan('A');
+        $checkout->scan('A');
+        $checkout->scan('A');
+
+        $this->assertEquals(310, $checkout->total(), 'Checkout total does not equal expected value of 310');
+    }
+
+    public function test_the_discounted_price_is_used_when_ordering_two_of_B()
     {
         $checkout = new Checkout();
 
@@ -80,6 +110,7 @@ class CheckoutTest extends TestCase
     {
         return [
             [100, ['A', 'A']],
+            [130, ['A', 'A', 'A']],
             [130, ['A', 'A', 'B']],
             [85, ['A', 'C', 'D']],
         ];

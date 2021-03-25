@@ -23,8 +23,14 @@ class Checkout implements CheckoutInterface
      * @var int[][]
      */
     protected $discounts = [
-        'A' => [3, 20],
-        'B' => [2, 15],
+        'A' => [
+            'threshold' => 3,
+            'amount' => 20
+        ],
+        'B' => [
+            'threshold' => 2,
+            'amount' => 15
+        ],
     ];
 
     /**
@@ -78,8 +84,9 @@ class Checkout implements CheckoutInterface
         $totalDiscount = 0;
 
         foreach ($this->discounts as $key => $discount) {
-            if ($this->stats[$key] >= $discount[0]) {
-                $totalDiscount += $discount[1];
+            if ($this->stats[$key] >= $discount['threshold']) {
+                $numberOfSets = floor($this->stats[$key] / $discount['threshold']);
+                $totalDiscount += ($discount['amount'] * $numberOfSets);
             }
         }
 

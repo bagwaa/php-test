@@ -50,8 +50,6 @@ class Checkout implements CheckoutInterface
      */
     public function scan(string $sku)
     {
-        // I am checking the SKU exists in our price list first, in reality I would probably raise
-        // an exception here so that we can log it and notify an admin if someone has somehow attempted this.
         if (!array_key_exists($sku, $this->pricing)) {
             return;
         }
@@ -70,12 +68,7 @@ class Checkout implements CheckoutInterface
      * @return int
      */
     public function total(): int
-    {
-        // I am using the null coalescing operator here, this way if we have no products
-        // to iterate through, we return a total of 0 instead of null
-        //
-        // I am also using array_reduce to essentially reduce the cart down to a single value which
-        // represents the total value
+   {
         $standardPrices = array_reduce($this->cart, function ($total, array $product) {
             $total += $product['price'];
             return $total;
